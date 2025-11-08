@@ -95,7 +95,7 @@ This is the easiest method and works best for most cases.
 
 3. **Pull the database from Heroku:**
    ```bash
-   heroku pg:pull DATABASE_URL postgresql://n8n:n8n_password@localhost:5432/n8n -a n8n-tc
+   heroku pg:pull DATABASE_URL postgresql://n8n:n8n_password@localhost:5433/n8n -a n8n-tc
    ```
 
    This command:
@@ -107,6 +107,7 @@ This is the easiest method and works best for most cases.
    Errors
    - If authentication fails, pay attention to the n8n user that's in docker.yml. Try the password again in the connection string.
    - If says n8n already exists, you'll need to delete that table from postgresql. Log into your postgresql server via PgAdmin. Register a server so it becomes available in the Object Explorer navigation panel on the left. Name it whatever you want, but under Connection tab that "Host name/address" can be local host. Fill in Port, Username, and Password. Then you can view the n8n table under Schemas -> Tables -> n8n. You right click and delete it. Then you should be able to pull and dump into the local n8n table with the above command.
+   - If complains n8n role doesn't exist, check that the port in the pull command matches the host port at the postgresql service at the compose.yml (HINT the syntax is `HOST_PORT:CONTAINER_PORT` or more colloquially thought as `HOST_PORT:SERVICE_PORT`)
 
 4. **Start n8n instances:**
    ```bash
