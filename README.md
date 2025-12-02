@@ -31,11 +31,21 @@ Use cases:
 This setup runs:
 - PostgreSQL database on port 5433 (mapped from container's 5432 to avoid conflicts)
 - n8n5002 instance on http://localhost:5002
-- n8n5003 instance on http://localhost:5003
+- ~~n8n5003 instance on http://localhost:5003~~ (commented out - see note below)
 
 Both n8n instances share the same PostgreSQL database (like on Heroku).
 
 **Note:** PostgreSQL uses port 5433 locally to avoid conflicts with any existing PostgreSQL installation on your Mac.
+
+### Important Update: Single Instance Configuration
+
+**The second n8n instance (n8n5003) is currently commented out in `compose.yml`.** 
+
+We discovered that running two workflows simultaneously from the same user account across multiple n8n ports causes workflow errors. The workflows will error out until only one workflow is running at a time.
+
+**Workaround:** If you need to run workflows on multiple ports simultaneously, you'll need to use separate n8n user accounts on each port (n8n5002 and n8n5003). Each account can run its own workflows independently without conflicts.
+
+**Important Note on Webhook URLs:** If you copy the same workflow to a different account on a different port, the webhook URL will have a different path/ID (not just a different port number). N8n generates a unique webhook identifier for each workflow, so you'll need to update any external services that call these webhooks with the new webhook URLs.
 
 ## Quick Start
 
@@ -62,7 +72,7 @@ Create a `compose.yml` based on `compose.sample.yml`, filling in your app name a
 
 5. **Access n8n:**
    - Instance 1: http://localhost:5002
-   - Instance 2: http://localhost:5003
+   - ~~Instance 2: http://localhost:5003~~ (currently commented out)
 
 Note it may say "Site unable to reach" for the first few minutes depending on your computer's speed. You may run daemonless to get a feel when n8n finishes initializing.
 
@@ -306,9 +316,10 @@ Key environment variables in `compose.yml`:
 
 ## Notes
 
-- Both n8n instances (5002 and 5003) share the same database
+- Currently only running one n8n instance (5002) to avoid workflow conflicts
+- The second instance (n8n5003) is commented out in `compose.yml`
 - Data persists in Docker volumes even after `docker compose down`
 - To fully reset: `docker compose down -v` (removes all data)
 - PostgreSQL data is stored in the `postgres_data` volume
-- n8n config/keys are stored in `n8n_data_5002` and `n8n_data_5003` volumes
+- n8n config/keys are stored in `n8n_data_5002` volume (and `n8n_data_5003` if uncommented)
 
